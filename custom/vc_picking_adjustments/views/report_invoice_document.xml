@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_invoice_document_with_sales_conditions" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[hasclass('page')]" position="inside">
+            <div class="sales_conditions">
+                <span t-field="o.company_id.sales_conditions"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//td[@name='account_invoice_line_name']" position="replace">
+            <td name="account_invoice_line_name">
+                <div t-field="line.name" t-options="{'widget': 'text'}"/>
+                <t t-foreach="line.sale_line_ids" t-as="sale_order_line">
+                    <t t-foreach="sale_order_line.move_ids" t-as="stock_move">
+                        <t t-foreach="stock_move.move_line_ids" t-as="stock_move_line">
+                            <div t-field="stock_move_line.lot_number"/>
+                        </t>
+                    </t>
+                </t>
+            </td>
+        </xpath>
+    </template>
+</odoo>

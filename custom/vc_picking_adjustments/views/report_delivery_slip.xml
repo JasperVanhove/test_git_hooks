@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_delivery_with_client_reference" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@name='div_origin']" position="after">
+            <div t-if="o.sale_id.client_order_ref" class="col-auto" name="div_sale_order_client_reference">
+                <strong>Ref. klant:</strong>
+                <p t-field="o.sale_id.client_order_ref"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//th[@name='th_sml_quantity']" position="before">
+            <t t-set="has_result_package" t-value="o.move_line_ids.mapped('result_package_id')"/>
+            <th name="th_result_package_id" t-if="has_result_package">Destination Package</th>
+        </xpath>
+
+        <xpath expr="//span[@t-field='move_line.qty_done']/.." position="before">
+            <td t-if="has_result_package"><span t-field="move_line.result_package_id.name" /></td>
+        </xpath>
+
+        <xpath expr="//span[@t-field='move_line.lot_name']" position="after">
+            <div t-if="move_line.lot_id.use_date" class="small">
+                THT <span t-esc="move_line.lot_id.use_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//span[@t-field='move_line.lot_id.name']" position="after">
+            <div t-if="move_line.lot_id.use_date" class="small">
+                THT <span t-esc="move_line.lot_id.use_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+            </div>
+        </xpath>
+        <xpath expr="//span[@t-field='move_line.product_id']/.." position="replace">
+            <td>
+                <p>
+                <span t-field="move_line.product_id"/>
+                </p>
+                <p>
+                <span t-field="move_line.lot_number"/>
+                </p>
+            </td>
+        </xpath>
+    </template>
+    <template id="delivery_slip_without_top_client_ref" inherit_id="sale_stock.report_delivery_document_inherit_sale_stock">
+        <xpath expr="//div[@t-if='o.sudo().sale_id.client_order_ref']" position="replace"/>
+    </template>
+</odoo>

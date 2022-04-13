@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cost_price_compute_wizard" model="ir.ui.view">
+        <field name="name">Calculate Cost Prices</field>
+        <field name="model">vancamps.cost.price.compute</field>
+        <field name="arch" type="xml">
+            <form string="Parameters">
+                <p>
+                Calculate cost prices for all products?
+                </p>
+                <footer>
+                    <button name="cost_price_calculation" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cost_price_compute" model="ir.actions.act_window">
+        <field name="name">Compute Cost Price</field>
+        <field name="res_model">vancamps.cost.price.compute</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_cost_price_compute" id="menu_cost_price_compute" parent="stock.menu_stock_warehouse_mgmt" sequence="136"/>
+
+</odoo>

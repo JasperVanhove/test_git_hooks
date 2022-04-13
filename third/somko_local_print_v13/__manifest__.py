@@ -1,0 +1,20 @@
+{
+    'name': "Somko Local Print",
+    'version': '13.0.0',
+    'category': 'Generic Modules/Base',
+    'author': "Somko",
+    'website': 'somko.be',
+    'license': 'AGPL-3',
+    "depends": ['web', 'base'],
+    'data': [
+        'data/printing_data.xml',
+        'security/security.xml',
+        'views/assets.xml',
+        'views/printing_report.xml',
+        'views/res_users.xml',
+        'views/ir_actions_report.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'external_dependencies': {},
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="purchase.email_template_edi_purchase" model="mail.template">
+            <field name="email_to">${object.partner_id.email_supplier or object.partner_id.email}</field>
+            <field name="partner_to"></field>
+        </record>
+
+        <record id="purchase.email_template_edi_purchase_done" model="mail.template">
+            <field name="email_to">${object.partner_id.email_supplier or object.partner_id.email}</field>
+            <field name="partner_to"></field>
+        </record>
+    </data>
+</odoo>

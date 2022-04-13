@@ -1,0 +1,11 @@
+.sales_conditions {
+    font-size: 0.7em;
+    page-break-inside: avoid;
+}
+
+.company_info {
+    font-size: 0.8em;
+    color: #C0000D;
+    text-align: center;
+    margin-top: 1.5em;
+}

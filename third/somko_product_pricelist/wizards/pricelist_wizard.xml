@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="pricelist_wizard_view" model="ir.ui.view">
+        <field name="name">pricelist.wizard.view</field>
+        <field name="model">pricelist.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="company_id" readonly="1" invisible="1"/>
+                    <field name="product_tmpl_id" readonly="1" invisible="1"/>
+                    <field name="pricelist_line_ids" readonly="1" nolabel="1">
+                        <tree editable="bottom" default_order="pricelist_id, price">
+                            <field name="pricelist_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="price"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <t>
+                        <h5>Sales Prices above are valid for 1 piece on <field name="date" readonly="1" widget="date"/></h5>
+                    </t>
+                    <button string="Close" class="oe_highlight pull-right" special="cancel" align="right"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

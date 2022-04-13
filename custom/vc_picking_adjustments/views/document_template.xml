@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="external_layout_vancamps" inherit_id="web.external_layout_clean">
+        <xpath expr="//div[@name='company_address']" position="replace"/>
+        <xpath expr='//div[hasclass("footer", "o_clean_footer")]' position="replace">
+            <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
+                <div class="row mt8">
+                    <div class="col-12 company_info">
+                        <span t-field="company.company_info_footer"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

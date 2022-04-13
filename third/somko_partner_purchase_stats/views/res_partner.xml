@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_line_tree_by_partner" model="ir.ui.view">
+        <field name="name">purchase.order.line.tree</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="before">
+                <field name="date_order"/>
+            </xpath>
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="categ_id"/>
+            </xpath>
+            <xpath expr="//field[@name='product_qty']" position="after">
+                <field name="qty_received"/>
+                <field name="qty_returned"/>
+                <field name="qty_invoiced"/>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="price_total" sum="Total"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchases_order_line_filter" model="ir.ui.view">
+        <field name="name">purchase.order.line.select</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_search"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <!--add filter on to receive-->
+            <xpath expr="//filter[@name='groupby_supplier']" position="after">
+                <filter string="To Receive" name="to_receive"
+                        domain="[('qty_to_receive','!=', 0)]"
+                        help="Purchase Order Lines not fully received"/>
+            </xpath>
+            <!--enable search on category-->
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="categ_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="act_res_partner_2_purchase_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">purchase.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_partner"/>
+        <field name="search_view_id" ref="somko_partner_purchase_stats.view_purchases_order_line_filter"/>
+        <field name="domain">[('state','in',['purchase', 'done'])]</field>
+        <field name="context">{'search_default_partner_id': active_id}
+        </field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="res_partner_view_purchase_buttons" model="ir.ui.view">
+        <field name="name">res.partner.view.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="purchase.res_partner_view_purchase_buttons"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(purchase.act_res_partner_2_purchase_order)d']"
+                   position="attributes">
+                <attribute
+                        name="name">
+                    %(somko_partner_purchase_stats.act_res_partner_2_purchase_order_line)d
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='purchase_order_count']" position="replace">
+                <field string="Purchases"
+                       name="purchase_order_total"
+                       widget='monetary'
+                       options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner kanban view inherit -->
+    <record model="ir.ui.view" id="purchase_partner_kanban_view">
+        <field name="name">res.partner.kanban.purchaseorder.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="purchase.purchase_partner_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='purchase_order_count']" position="after">
+                <field name="purchase_order_total"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_partner_links')]" position="inside">
+                <span t-if="record.purchase_order_total.value>0" class="badge badge-pill"><i class="fa fa-fw fa-euro" role="img" aria-label="Sale orders" title="Sale orders total"/><t t-esc="record.purchase_order_total.value"/></span>
+            </xpath>
+        </field>
+    </record>
+</odoo>

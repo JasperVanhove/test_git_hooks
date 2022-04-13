@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_partner_form_inherit_supplier_email" model="ir.ui.view">
+        <field name="name">Adds Supplier Email</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email']/.." position="after">
+                <field name="email_supplier" widget="email" attrs="{'invisible': [('supplier_rank','&lt;', 1)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

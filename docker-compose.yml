@@ -1,0 +1,19 @@
+version: '2.1'
+services:
+  db:
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=postgres
+  odoo:
+    build: .
+    environment:
+      - SOMKOENV=DEV
+    links:
+      - db
+    ports:
+      - 80:8069
+    volumes:
+      - ./custom:/mnt/repo/custom
+      - ./third:/mnt/repo/third

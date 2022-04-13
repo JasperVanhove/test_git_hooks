@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_line_tree_by_product" model="ir.ui.view">
+        <field name="name">purchase.order.line.tree</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="before">
+                <field name="date_order"/>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="price_total" sum="Total"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchases_order_line_filter_product" model="ir.ui.view">
+        <field name="name">purchase.order.line.select</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_search"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <!--add filter on to deliver-->
+            <xpath expr="//filter[@name='hide_cancelled']" position="after">
+                <filter string="To Deliver" name="to_deliver"
+                        domain="[('qty_to_deliver','!=', 0)]"
+                        help="Purchase Order Lines not fully delivered"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='groupby_product']" position="after">
+                <filter string="Vendor" name="vendor" domain="[]"
+                        context="{'group_by':'partner_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="act_product_product_purchase_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">purchase.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_product"/>
+        <field name="search_view_id"
+               ref="view_purchases_order_line_filter_product"/>
+        <field name="domain">[('state','in',['purchase', 'done'])]</field>
+        <field name="context">{'search_default_product_id': active_id}
+        </field>
+        <field name="target">current</field>
+    </record>
+
+    <record model="ir.ui.view" id="product_form_view_purchaseamount_order_button">
+        <field name="name">product.product.purchase.order</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="groups_id"
+               eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        name="%(somko_product_purchase_stats.act_product_product_purchase_order_line)d"
+                        type="action"
+                        icon="fa-euro"
+                        groups="purchase.group_purchase_user">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="purchase_order_total"
+                                   nolabel="1" class="mr4"/>
+                        </span>
+                        <span class="o_stat_text">Purchased</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="act_product_template_purchase_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">purchase.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_product"/>
+        <field name="search_view_id"
+               ref="view_purchases_order_line_filter_product"/>
+        <field name="domain">[('state','in',['purchase',
+            'done']),('product_id.product_tmpl_id','=',active_id)]
+        </field>
+        <field name="target">current</field>
+    </record>
+
+
+    <record model="ir.ui.view"
+            id="product_template_form_view_purchase_order_button">
+        <field name="name">product.template.purchase.order.button</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="purchase.view_product_template_purchase_buttons_from"/>
+        <field name="groups_id"
+               eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+        <field name="arch" type="xml">
+            <button name="action_view_po" position="before">
+                <button class="oe_stat_button"
+                        name="%(somko_product_purchase_stats.act_product_template_purchase_order_line)d"
+                        type="action"
+                        icon="fa-euro"
+                        groups="purchase.group_purchase_manager">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="purchase_order_total"
+                                   nolabel="1" class="mr4"/>
+                        </span>
+                        <span class="o_stat_text">Purchased</span>
+                    </div>
+                </button>
+            </button>
+        </field>
+    </record>
+
+</odoo>
+

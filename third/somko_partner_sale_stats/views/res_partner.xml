@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_line_tree_by_partner" model="ir.ui.view">
+        <field name="name">sale.order.line.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="before">
+                <field name="date_order"/>
+            </xpath>
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="categ_id"/>
+            </xpath>
+            <xpath expr="//field[@name='qty_to_invoice']" position="after">
+                <field name="qty_returned"/>
+                <field name="price_unit"/>
+                <field name="discount" groups="sale.group_discount_per_so_line"/>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="price_total" sum="Total"/>
+            </xpath>
+            <xpath expr="//field[@name='order_partner_id']"
+                   position="replace"/>
+            <xpath expr="//field[@name='salesman_id']" position="replace"/>
+        </field>
+    </record>
+
+    <record id="view_sales_order_line_filter" model="ir.ui.view">
+        <field name="name">sale.order.line.select</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <!--add filter on to deliver-->
+            <xpath expr="//filter[@name='to_invoice']" position="after">
+                <filter string="To Deliver" name="to_deliver"
+                        domain="[('qty_to_deliver','!=', 0)]"
+                        help="Sales Order Lines not fully delivered"/>
+            </xpath>
+            <!--enable search on category-->
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="categ_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="act_res_partner_2_sale_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_partner"/>
+        <field name="search_view_id" ref="somko_partner_sale_stats.view_sales_order_line_filter"/>
+        <field name="domain">[('state','in',['sale', 'done'])]</field>
+        <field name="context">{'search_default_order_partner_id': active_id}
+        </field>
+        <field name="target">current</field>
+    </record>
+
+    <record id="res_partner_view_buttons" model="ir.ui.view">
+        <field name="name">res.partner.view.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="sale.res_partner_view_buttons"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(sale.act_res_partner_2_sale_order)d']"
+                   position="attributes">
+                <attribute
+                        name="name">
+                    %(somko_partner_sale_stats.act_res_partner_2_sale_order_line)d
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='sale_order_count']" position="replace">
+                <field string="Sales"
+                       name="sale_order_total"
+                       widget='monetary'
+                       options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner kanban view inherit -->
+    <record model="ir.ui.view" id="crm_lead_partner_kanban_view">
+        <field name="name">res.partner.kanban.saleorder.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="sale.crm_lead_partner_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sale_order_count']" position="after">
+                <field name="sale_order_total"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_partner_links')]" position="inside">
+                <span t-if="record.sale_order_total.value>0" class="badge badge-pill"><i class="fa fa-fw fa-euro" role="img" aria-label="Sale orders" title="Sale orders total"/><t t-esc="record.sale_order_total.value"/></span>
+            </xpath>
+        </field>
+    </record>
+</odoo>

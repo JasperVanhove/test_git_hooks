@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_line_tree_by_product" model="ir.ui.view">
+        <field name="name">sale.order.line.tree</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="before">
+                <field name="date_order"/>
+            </xpath>
+            <xpath expr="//field[@name='qty_to_invoice']" position="after">
+                <field name="qty_returned"/>
+                <field name="price_unit"/>
+                <field name="discount"
+                       groups="sale.group_discount_per_so_line"/>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="price_total" sum="Total"/>
+            </xpath>
+            <xpath expr="//field[@name='salesman_id']" position="replace"/>
+        </field>
+    </record>
+
+    <record id="view_sales_order_line_filter_product" model="ir.ui.view">
+        <field name="name">sale.order.line.select</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <!--add filter on to deliver-->
+            <xpath expr="//filter[@name='to_invoice']" position="after">
+                <filter string="To Deliver" name="to_deliver"
+                        domain="[('qty_to_deliver','!=', 0)]"
+                        help="Sales Order Lines not fully delivered"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='product']" position="after">
+                <filter string="Client" name="client" domain="[]"
+                        context="{'group_by':'order_partner_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="act_product_product_sale_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_product"/>
+        <field name="search_view_id"
+               ref="view_sales_order_line_filter_product"/>
+        <field name="domain">[('state','in',['sale', 'done'])]</field>
+        <field name="context">{'search_default_product_id': active_id}
+        </field>
+        <field name="target">current</field>
+    </record>
+
+    <record model="ir.ui.view" id="product_form_view_saleamount_order_button">
+        <field name="name">product.product.sale.order</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="groups_id"
+               eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="arch" type="xml">
+            <button name="action_view_sales" position="after">
+                <button class="oe_stat_button"
+                        name="%(somko_product_sale_stats.act_product_product_sale_order_line)d"
+                        type="action"
+                        icon="fa-euro"
+                        groups="sales_team.group_sale_salesman">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="sale_order_total"
+                                   nolabel="1" class="mr4"/>
+                        </span>
+                        <span class="o_stat_text">Sold</span>
+                    </div>
+                </button>
+            </button>
+        </field>
+    </record>
+
+    <record id="act_product_template_sale_order_line"
+            model="ir.actions.act_window">
+        <field name="name">Order lines</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_order_line_tree_by_product"/>
+        <field name="search_view_id"
+               ref="view_sales_order_line_filter_product"/>
+        <field name="domain">[('state','in',['sale',
+            'done']),('product_id.product_tmpl_id','=',active_id)]
+        </field>
+        <field name="target">current</field>
+    </record>
+
+
+    <record model="ir.ui.view"
+            id="product_template_form_view_sale_order_button">
+        <field name="name">product.template.sale.order.button</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="product.product_template_only_form_view"/>
+        <field name="groups_id"
+               eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="arch" type="xml">
+            <button name="action_view_sales" position="after">
+                <button class="oe_stat_button"
+                        name="%(somko_product_sale_stats.act_product_template_sale_order_line)d"
+                        type="action"
+                        icon="fa-euro"
+                        groups="sales_team.group_sale_salesman">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="sale_order_total"
+                                   nolabel="1" class="mr4"/>
+                        </span>
+                        <span class="o_stat_text">Sold</span>
+                    </div>
+                </button>
+            </button>
+        </field>
+    </record>
+
+</odoo>
+

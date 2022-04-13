@@ -1,0 +1,41 @@
+<odoo>
+    <template id="report_picking_adjustements" inherit_id="stock.report_picking">
+        <xpath expr="//div[@name='div_origin']" position="after">
+            <div t-if="o.sale_id.client_order_ref" class="col-auto" name="div_sale_order_client_reference">
+                <strong>Ref. klant:</strong>
+                <p t-field="o.sale_id.client_order_ref"/>
+            </div>
+        </xpath>
+        <xpath expr="//span[@t-field='ml.product_uom_id']" position="after">
+            <span> (</span><span t-field="move.product_uom_qty"/>)
+        </xpath>
+        <xpath expr="//p[@t-field='o.note']" position="before">
+            <t t-set="print_missing" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty != x.reserved_availability)"/>
+            <table class="table table-sm" t-if="print_missing">
+                <thead>
+                    <tr>
+                        <th name="th_product">
+                            <strong>Missing Product</strong>
+                        </th>
+                        <th>
+                            <strong>Quantity</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.move_lines.filtered(lambda x: x.product_uom_qty != x.reserved_availability).sorted(key=lambda m: m.product_id.id)" t-as="move">
+                        <tr>
+                            <td>
+                                <span t-field="move.product_id.display_name"/><br/>
+                            </td>
+                            <td>
+                                <span t-field="move.product_uom_qty"/>
+                                <span t-field="move.product_uom" groups="uom.group_uom"/>
+                            </td>
+                        </tr>
+                    </t>
+                  </tbody>
+            </table>
+        </xpath>
+    </template>
+</odoo>
